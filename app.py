@@ -3,9 +3,21 @@ import re
 import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+# Configure CORS based on environment
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+if os.getenv("FLASK_ENV") == "production":
+    # In production, only allow specific frontend URL
+    CORS(app, resources={r"/api/*": {"origins": [frontend_url]}})
+else:
+    # In development, allow all origins for easier testing
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configuration
 THRESHOLD = 0.8
